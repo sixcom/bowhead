@@ -1,3 +1,8 @@
+For the missing account ID on Demo accounts. Log into your demo account, click on "My Account" in the top right (if you're not already on your My Account page). There should be something for Add Sub-Accounts. Click on it. You should then be looking at a screen to add a new sub account. On the left side there should be a list for exiting sub accounts. You should have one there already with a balance. Mine had $100,000.00. Click on that and then you should see the account ID in the Account Summary section on the right. It should look something like "101-001-5249467-001". If you use an account with no balance you may get a new error. Good luck!
+
+
+
+
 UPDATE (1/08/2018): PREVIEW of the official Docker container, with partial web configuration. Container is using Alpine Linux+Nginx+PHP7.1 with MariaDB and Redis. ... Still a work in progress, but, it will connect to coinigy -or- your ccxt accounts and pull ticker data into the database on the pairs you select in the web interface. 
 
 ```
