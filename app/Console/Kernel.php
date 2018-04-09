@@ -14,24 +14,25 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        Commands\A_SetupCommand::class,
         Commands\DataRunnerCcxtCommand::class,
         Commands\DataRunnerCoinigyCommand::class,
-        Commands\BitfinexWebsocketCommand::class,
-        Commands\CoinbaseWebsocketCommand::class,
-        Commands\OandaStreamCommand::class,
+        #Commands\BitfinexWebsocketCommand::class,
+        #Commands\CoinbaseWebsocketCommand::class,
+        #Commands\OandaStreamCommand::class,
         Commands\ExampleUsageCommand::class,
         Commands\ExampleCommand::class,
-        Commands\ExampleForexStrategyCommand::class,
-        Commands\BitfinexWebsocketETHCommand::class,
-        Commands\WebsocketCoinbaseTestCommand::class,
+        #Commands\ExampleForexStrategyCommand::class,
+        #Commands\BitfinexWebsocketETHCommand::class,
+        #Commands\WebsocketCoinbaseTestCommand::class,
         Commands\SignalsExampleCommand::class,
         Commands\TestStrategiesCommand::class,
         Commands\GdaxScalperCommand::class,
         Commands\TestCandlesCommand::class,
         Commands\TestTrendsCommand::class,
         Commands\RandomWalkCommand::class,
-        Commands\FxStreamCommand::class,
-		Commands\KrakenStreamCommand::class,
+        #Commands\FxStreamCommand::class,
+		#Commands\KrakenStreamCommand::class,
     ];
 
     /**
@@ -43,8 +44,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         #$schedule->command('bowhead:fx_stream')->withoutOverlapping()->everyMinute();
-        $schedule->command('bowhead:datarunner_ccxt')->withoutOverlapping()->everyMinute();
         $schedule->command('bowhead:datarunner_coinigy')->withoutOverlapping()->everyMinute();
+        $schedule->command('bowhead:datarunner_ccxt')->withoutOverlapping()->everyMinute();
     }
 
     /**

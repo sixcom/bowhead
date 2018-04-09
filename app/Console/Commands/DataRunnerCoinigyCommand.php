@@ -8,6 +8,13 @@ use Illuminate\Console\Command;
 use Bowhead\Util\Coinigy;
 use Bowhead\Models;
 
+/**
+ * Class DataRunnerCoinigyCommand
+ * @package Bowhead\Console\Commands
+ *
+ *          KEEP IN MIND THAT COINIGY HAS A RATE LIMIT
+ *          https://coinigy.docs.apiary.io/#introduction/rate-limiting:
+ */
 class DataRunnerCoinigyCommand extends Command
 {
     use DataCoinigy, Config;
@@ -55,7 +62,8 @@ class DataRunnerCoinigyCommand extends Command
         if ($this->bowhead_config('COINIGY') == 0){
             exit(1);
         }
-        #$coinigy = new Coinigy();
+
+        $coinigy = new Coinigy();
         while (1) {
             $exchanges = $tick = $bh_exchanges = [];
             $c_exchanges = $this->bowhead_config('EXCHANGES');
@@ -68,7 +76,15 @@ class DataRunnerCoinigyCommand extends Command
             $trading_pairs = explode(',', $this->bowhead_config('PAIRS'));
 
             foreach ($exchanges as $code => $ex) {
-                foreach ($trading_pairs as $pair) {
+                /**
+                 *  We need to make a best effort here to not try to get a ticker
+                 *  which does not exist.
+                 */
+                $_pairs = Models\bh_exchange_pairs::where('exchange_id', '=', $bh_exchanges[$code])->get()->toArray(); // get current list of pairs for exchange
+                $pairs = array_pluck($_pairs,'exchange_pair');      // only select the pair name
+                $looping_pairs = array_intersect($trading_pairs, $pairs); // get intersection of the exchanges pairs with the users selected pairs.
+
+                foreach ($looping_pairs as $pair) {
                     $ticker = $this->get_ticker($code, $pair);
                     if (!empty($ticker['err_msg'])) {
                         continue;
@@ -79,7 +95,7 @@ class DataRunnerCoinigyCommand extends Command
                     $tick['low']             = $ticker['low_trade'];
                     $tick['bid']             = $ticker['bid'];
                     $tick['ask']             = $ticker['ask'];
-                    $tick['baseVolume']      = $ticker['current_volume'];
+                    $tick['basevolume']      = $ticker['current_volume'];
                     $tick['last']            = $ticker['last_trade'];
                     $tick['symbol']          = $ticker['market'];
                     $tick['timestamp']       = time();
@@ -87,12 +103,12 @@ class DataRunnerCoinigyCommand extends Command
                     $tick['datetime']        = $ticker['timestamp'];
                     $tickers_model           = new Models\bh_tickers();
                     $tickers_model::updateOrCreate(
-                        ['bh_exchanges_id' => $bh_exchanges[$code], 'symbol' => $pair, 'timestamp' => $tick['timestamp']]
+                        ['bh_exchanges_id' => $tick['bh_exchanges_id'], 'symbol' => $pair, 'timestamp' => $tick['timestamp']]
                         , $tick);
                 }
             }
 
-            // TODO Do OHLC here.
+            // TODO Do OHLC here. Not really needed, but could be nice
             // TODO https://coinigy.docs.apiary.io/#reference/market-data/market-data/data-{type:all}
 
             sleep(5);
